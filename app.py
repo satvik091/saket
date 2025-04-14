@@ -6,18 +6,22 @@ import io
 from PIL import Image
 import base64
 from ultralytics import YOLO
+from torch.serialization import add_safe_globals
+from ultralytics.nn.tasks import DetectionModel
 import logging
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+add_safe_globals([DetectionModel])
+
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
 # Load your YOLO model at startup
 def load_model():
     try:
-        model_path = "best (1).pt"
+        model_path = "best.pt"
         model = YOLO(model_path)
         logger.info("Model loaded successfully!")
         return model
