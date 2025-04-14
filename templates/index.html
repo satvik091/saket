@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IndigoWing - Advanced Aircraft Wing Analysis by Indigo Airlines</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --indigo-primary: #3a40b3;
+      --indigo-secondary: #091b5f;
+      --indigo-accent: #e0e6ff;
+      --indigo-light: #f5f7ff;
+      --indigo-dark: #0c1445;
+      --indigo-gradient: linear-gradient(135deg, #3a40b3 0%, #091b5f 100%);
+    }
+
+    body {
+      background-color: var(--indigo-light);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
+    }
+
+    .navbar {
+      background-color: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(12, 20, 69, 0.08);
+      padding: 15px 0;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .navbar-scrolled {
+      padding: 8px 0;
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--indigo-primary) !important;
+      display: flex;
+      align-items: center;
+    }
+
+    .navbar-brand i {
+      margin-right: 10px;
+      font-size: 24px;
+      background: var(--indigo-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .navbar .nav-link {
+      color: var(--indigo-dark) !important;
+      font-weight: 600;
+      padding: 10px 16px !important;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .navbar .nav-link:hover,
+    .navbar .nav-link.active {
+      color: var(--indigo-primary) !important;
+    }
+
+    .navbar .nav-link.active::after {
+      content: '';
+      position: absolute;
+      width: 40%;
+      height: 3px;
+      background: var(--indigo-gradient);
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 10px;
+    }
+
+    .hero-section {
+      background: url('/api/placeholder/1920/1080') center center/cover no-repeat;
+      position: relative;
+      padding: 180px 0 220px;
+      overflow: hidden;
+      margin-top: 76px;
+    }
+
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--indigo-gradient);
+      opacity: 0.92;
+      z-index: 1;
+    }
+
+    .hero-section::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      right: 0;
+      height: 150px;
+      background: linear-gradient(to top, var(--indigo-light) 30%, transparent);
+      z-index: 2;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+    }
+
+    .hero-badge {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-radius: 30px;
+      padding: 10px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 25px;
+      display: inline-block;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .hero-title {
+      font-size: 4rem;
+      font-weight: 800;
+      margin-bottom: 30px;
+      background: linear-gradient(135deg, #ffffff 0%, #e0e6ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+      text-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .hero-subtitle {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.3rem;
+      max-width: 700px;
+      margin: 0 auto 30px;
+      font-weight: 400;
+    }
+
+    .floating-element {
+      position: absolute;
+      opacity: 0.4;
+      z-index: 1;
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .floating-1 {
+      top: 10%;
+      left: 5%;
+      transform: rotate(-15deg);
+      animation-delay: 0s;
+    }
+
+    .floating-2 {
+      top: 60%;
+      right: 8%;
+      transform: rotate(25deg);
+      animation-delay: 7s;
+    }
+
+    .floating-3 {
+      bottom: 15%;
+      left: 15%;
+      transform: rotate(-10deg);
+      animation-delay: 3s;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+
+      25% {
+        transform: translate(10px, 15px) rotate(5deg);
+      }
+
+      50% {
+        transform: translate(5px, -10px) rotate(-5deg);
+      }
+
+      75% {
+        transform: translate(-10px, 5px) rotate(3deg);
+      }
+
+      100% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+    }
+
+    .upload-container {
+      background-color: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(12, 20, 69, 0.1);
+      padding: 50px;
+      margin-top: -120px;
+      position: relative;
+      z-index: 10;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+      overflow: hidden;
+    }
+
+    .upload-container::before {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--indigo-accent) 0%, rgba(224, 230, 255, 0.3) 100%);
+      top: -100px;
+      right: -100px;
+      z-index: -1;
+    }
+
+    .upload-container h2 {
+      color: var(--indigo-dark);
+      font-weight: 800;
+      margin-bottom: 15px;
+      font-size: 2.2rem;
+    }
+
+    .upload-container .subtitle {
+      color: #5d6b98;
+      font-size: 1.1rem;
+      margin-bottom: 40px;
+    }
+
+    .result-container {
+      margin-top: 60px;
+      background-color: white;
+      border-radius: 20px;
+      box-shadow: 0 15px 50px rgba(12, 20, 69, 0.08);
+      padding: 40px;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+      overflow: hidden;
+      transition: all 0.5s ease;
+      position: relative;
+    }
+
+    .result-container::before {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(224, 230, 255, 0.4) 0%, rgba(224, 230, 255, 0.1) 100%);
+      bottom: -200px;
+      left: -200px;
+      z-index: 0;
+    }
+
+    .result-container h3 {
+      font-weight: 700;
+      color: var(--indigo-dark);
+      margin-bottom: 30px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .result-container h3::after {
+      content: '';
+      position: absolute;
+      width: 50%;
+      height: 4px;
+      background: var(--indigo-gradient);
+      bottom: -10px;
+      left: 0;
+      border-radius: 10px;
+    }
+
+    .image-container {
+      position: relative;
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(12, 20, 69, 0.15);
+      transition: all 0.3s ease;
+    }
+
+    .image-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(12, 20, 69, 0.25);
+    }
+
+    .result-image {
+      width: 100%;
+      border-radius: 12px;
+    }
+
+    .feature-card {
+      background-color: white;
+      border-radius: 16px;
+      padding: 40px 30px;
+      margin-top: 20px;
+      box-shadow: 0 15px 40px rgba(12, 20, 69, 0.06);
+      height: 100%;
+      transition: all 0.4s ease;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: var(--indigo-gradient);
+      top: 0;
+      left: 0;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-15px);
+      box-shadow: 0 20px 50px rgba(58, 64, 179, 0.2);
+    }
+
+    .feature-card:hover::before {
+      opacity: 1;
+    }
+
+    .feature-card:hover .feature-title,
+    .feature-card:hover .feature-text {
+      color: white;
+    }
+
+    .feature-card:hover .feature-icon {
+      background-color: white;
+    }
+
+    .feature-icon {
+      background-color: var(--indigo-accent);
+      color: var(--indigo-primary);
+      width: 80px;
+      height: 80px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin-bottom: 25px;
+      transition: all 0.4s ease;
+      box-shadow: 0 10px 20px rgba(58, 64, 179, 0.1);
+    }
+
+    .feature-title {
+      font-weight: 700;
+      color: var(--indigo-dark);
+      margin-bottom: 15px;
+      font-size: 1.4rem;
+      transition: all 0.4s ease;
+    }
+
+    .feature-text {
+      color: #5d6b98;
+      line-height: 1.7;
+      font-size: 1rem;
+      transition: all 0.4s ease;
+    }
+
+    .loader {
+      border: 5px solid rgba(224, 230, 255, 0.3);
+      border-top: 5px solid var(--indigo-primary);
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin: 30px auto;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .wing-data {
+      background-color: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 15px 40px rgba(12, 20, 69, 0.08);
+      border: 1px solid rgba(224, 230, 255, 0.8);
+      height: 100%;
+    }
+
+    .wing-data h4 {
+      color: var(--indigo-dark);
+      font-weight: 700;
+      margin-bottom: 25px;
+      position: relative;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--indigo-accent);
+    }
+
+    .upload-zone {
+      border: 2px dashed rgba(58, 64, 179, 0.2);
+      border-radius: 16px;
+      padding: 50px 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 30px;
+      background-color: rgba(224, 230, 255, 0.1);
+    }
+
+    .upload-zone:hover {
+      border-color: var(--indigo-primary);
+      background-color: rgba(224, 230, 255, 0.3);
+      transform: translateY(-5px);
+    }
+
+    .upload-icon {
+      font-size: 56px;
+      color: var(--indigo-primary);
+      margin-bottom: 20px;
+    }
+
+    .btn-primary {
+      background: var(--indigo-gradient);
+      border: none;
+      padding: 15px 35px;
+      font-weight: 600;
+      border-radius: 50px;
+      box-shadow: 0 10px 25px rgba(58, 64, 179, 0.25);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      font-size: 1.1rem;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #091b5f 0%, #3a40b3 100%);
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(58, 64, 179, 0.4);
+    }
+
+    .btn-primary:hover::before {
+      opacity: 1;
+    }
+
+    .btn-outline-primary {
+      border: 2px solid rgba(58, 64, 179, 0.3);
+      background: transparent;
+      color: var(--indigo-primary);
+      padding: 12px 30px;
+      font-weight: 600;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+      border-color: var(--indigo-primary);
+      background: rgba(224, 230, 255, 0.3);
+      color: var(--indigo-primary);
+      transform: translateY(-3px);
+    }
+
+    footer {
+      background-color: var(--indigo-dark);
+      color: white;
+      padding: 60px 0 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: rgba(58, 64, 179, 0.1);
+      top: -200px;
+      right: -100px;
+    }
+
+    footer::after {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: rgba(58, 64, 179, 0.1);
+      bottom: -150px;
+      left: -100px;
+    }
+
+    .list-group-item {
+      background-color: transparent;
+      padding: 20px;
+      border: none;
+      border-bottom: 1px solid rgba(224, 230, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .list-group-item:last-child {
+      border-bottom: none;
+    }
+
+    .list-group-item:hover {
+      background-color: rgba(224, 230, 255, 0.03);
+    }
+
+    .badge {
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .indigo-badge {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      background: var(--indigo-gradient);
+      color: white;
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 5px 15px rgba(58, 64, 179, 0.2);
+      z-index: 10;
+    }
+
+    .section-header {
+      margin-bottom: 70px;
+      position: relative;
+    }
+
+    .section-header h2 {
+      font-weight: 800;
+      color: var(--indigo-dark);
+      margin-bottom: 20px;
+      font-size: 2.5rem;
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-header h2::after {
+      content: '';
+      position: absolute;
+      width: 60px;
+      height: 4px;
+      background: var(--indigo-gradient);
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 10px;
+    }
+
+    .section-header p {
+      color: #5d6b98;
+      font-size: 1.2rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .alert-info {
+      background-color: rgba(224, 230, 255, 0.3);
+      border: none;
+      border-left: 4px solid var(--indigo-primary);
+      color: #5d6b98;
+    }
+
+    .text-success {
+      color: #28a745 !important;
+    }
+
+    .statistics-section {
+      padding: 80px 0;
+      background-color: var(--indigo-light);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .statistics-section::before {
+      content: '';
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: rgba(224, 230, 255, 0.7);
+      top: -250px;
+      left: -250px;
+      z-index: 0;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 15px 40px rgba(12, 20, 69, 0.06);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: rgba(224, 230, 255, 0.4);
+      bottom: -75px;
+      right: -75px;
+      z-index: -1;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 50px rgba(12, 20, 69, 0.1);
+    }
+
+    .stat-icon {
+      font-size: 36px;
+      color: var(--indigo-primary);
+      margin-bottom: 20px;
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--indigo-dark);
+      margin-bottom: 10px;
+      background: var(--indigo-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .stat-title {
+      color: #5d6b98;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .testimonial-section {
+      padding: 100px 0;
+      background-color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .testimonial-section::before {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: rgba(224, 230, 255, 0.5);
+      top: -150px;
+      right: -150px;
+      z-index: 0;
+    }
+
+    .testimonial-card {
+      background-color: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 15px 40px rgba(12, 20, 69, 0.06);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+      position: relative;
+      z-index: 1;
+      margin-top: 30px;
+    }
+
+    .testimonial-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 50px rgba(12, 20, 69, 0.1);
+    }
+
+    .testimonial-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .testimonial-quote {
+      font-size: 24px;
+      position: absolute;
+      top: -20px;
+      left: -10px;
+      color: var(--indigo-primary);
+      opacity: 0.2;
+    }
+
+    .testimonial-image {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 20px;
+      border: 3px solid var(--indigo-accent);
+    }
+
+    .testimonial-name {
+      font-weight: 700;
+      color: var(--indigo-dark);
+      margin-bottom: 5px;
+    }
+
+    .testimonial-position {
+      font-size: 0.9rem;
+      color: #5d6b98;
+    }
+
+    .testimonial-content {
+      color: #5d6b98;
+      line-height: 1.8;
+      font-style: italic;
+    }
+
+    .testimonial-rating {
+      margin-top: 20px;
+    }
+
+    .testimonial-rating i {
+      color: #ffc107;
+      margin-right: 3px;
+    }
+
+    .back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--indigo-gradient);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 1000;
+      box-shadow: 0 10px 25px rgba(58, 64, 179, 0.3);
+      transition: all 0.3s ease;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .back-to-top.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .back-to-top:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(58, 64, 179, 0.4);
+    }
+
+    /* Animation keyframes */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animated {
+      animation-duration: 1s;
+      animation-fill-mode: both;
+    }
+
+    .fadeInUp {
+      animation-name: fadeInUp;
+    }
+
+    .delay-1 {
+      animation-delay: 0.1s;
+    }
+
+    .delay-2 {
+      animation-delay: 0.3s;
+    }
+
+    .delay-3 {
+      animation-delay: 0.5s;
+    }
+
+    .delay-4 {
+      animation-delay: 0.7s;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Back to Top Button -->
+  <div class="back-to-top" id="backToTop">
+    <i class="fas fa-arrow-up"></i>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="#"><i class="fas fa-plane"></i> IndigoWing</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#features">Technology</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#statistics">Analytics</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#testimonials">Testimonials</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#contact">Contact</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <!-- Floating elements for visual interest -->
+    <div class="floating-element floating-1">
+      <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+        <path d="M50 0L93.3 25V75L50 100L6.7 75V25L50 0Z" fill="white" fill-opacity="0.1" />
+      </svg>
+    </div>
+    <div class="floating-element floating-2">
+      <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+        <circle cx="60" cy="60" r="60" fill="white" fill-opacity="0.1" />
+      </svg>
+    </div>
+    <div class="floating-element floating-3">
+      <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+        <rect width="80" height="80" rx="20" fill="white" fill-opacity="0.1" />
+      </svg>
+    </div>
+
+    <div class="container hero-content text-center">
+      <span class="hero-badge animated fadeInUp"><i class="fas fa-crown me-2"></i>Indigo Airlines Innovation Lab</span>
+      <h1 class="hero-title animated fadeInUp delay-1">Advanced Aircraft<br>Wing Analysis</h1>
+      <p class="hero-subtitle animated fadeInUp delay-2">Transform your aircraft fleet management with cutting-edge AI
+        wing analysis technology for optimal performance and efficiency</p>
+      <div class="animated fadeInUp delay-3">
+        <a href="#upload" class="btn btn-light btn-lg px-4 me-2"><i class="fas fa-upload me-2"></i>Try It Now</a>
+        <a href="#features" class="btn btn-outline-light btn-lg px-4">Learn More</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Upload Section -->
+    <div class="row justify-content-center" id="upload">
+      <div class="col-lg-10">
+        <div class="upload-container text-center animated fadeInUp">
+          <span class="indigo-badge">Indigo Wing AI</span>
+          <h2>Analyze Aircraft Wings</h2>
+          <p class="subtitle">Upload an image of an aircraft to analyze its wing design and aerodynamic characteristics
+            with our proprietary AI technology</p>
+
+          <form id="uploadForm">
+            <div class="upload-zone" id="dropZone">
+              <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+              </div>
+              <h4>Drag & Drop Aircraft Image Here</h4>
+              <p class="text-muted">or</p>
+              <input class="form-control d-none" type="file" id="imageUpload" accept="image/*">
+              <button type="button" class="btn btn-outline-primary" id="browseBtn">Browse Files</button>
+              <p class="text-muted mt-3"><small>Supports: JPG, PNG, GIF (Max 10MB)</small></p>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-search me-2"></i>Analyze Wing Design
+            </button>
+          </form>
+
+          <div class="loader" id="loader"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="row justify-content-center mt-5">
+      <div class="col-lg-10">
+        <div class="result-container" id="resultContainer" style="display: none;">
+          <h3 class="text-center">Analysis Results</h3>
+
+          <div class="row">
+            <div class="col-lg-8">
+              <div class="image-container">
+                <img id="resultImage" class="result-image" src="" alt="Analysis Result">
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="wing-data">
+                <h4>Wing Characteristics</h4>
+                <div id="wingData">
+                  <!-- This will be populated by JavaScript -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row py-5 my-5" id="features">
+      <div class="col-12 text-center mb-4">
+        <div class="section-header">
+          <h2>Our Analysis Technology</h2>
+          <p class="text-muted">Cutting-edge AI technologies for aviation design analysis and fleet performance
+            optimization</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-microscope"></i>
+          </div>
+          <h4 class="feature-title">YOLO Detection</h4>
+          <p class="feature-text">State-of-the-art object detection to identify aircraft wings with high precision using
+            our proprietary computer vision algorithms</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-ruler-combined"></i>
+          </div>
+          <h4 class="feature-title">Wing Measurements</h4>
+          <p class="feature-text">Analyze wingspan, aspect ratio, and other critical design parameters to improve fuel
+            efficiency and reduce operational costs</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-wind"></i>
+          </div>
+          <h4 class="feature-title">Design Insights</h4>
+          <p class="feature-text">Get detailed aerodynamic insights and performance characteristics of detected wings to
+            optimize fleet performance</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics Section -->
+    <div class="statistics-section py-5 my-5" id="statistics">
+      <div class="container">
+        <div class="row text-center mb-5">
+          <div class="col-12">
+            <div class="section-header">
+              <h2>IndigoWing Impact</h2>
+              <p class="text-muted">Our technology helps airlines achieve remarkable improvements in efficiency and
+                performance</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-3 mb-4">
+            <div class="stat-card text-center">
+              <div class="stat-icon">
+                <i class="fas fa-gas-pump"></i>
+              </div>
+              <div class="stat-number">9.7%</div>
+              <div class="stat-title">Fuel Savings</div>
+            </div>
+          </div>
+
+          <div class="col-md-3 mb-4">
+            <div class="stat-card text-center">
+              <div class="stat-icon">
+                <i class="fas fa-leaf"></i>
+              </div>
+              <div class="stat-number">12.3%</div>
+              <div class="stat-title">CO₂ Reduction</div>
+            </div>
+          </div>
+
+          <div class="col-md-3 mb-4">
+            <div class="stat-card text-center">
+              <div class="stat-icon">
+                <i class="fas fa-rupee-sign"></i>
+              </div>
+              <div class="stat-number">8.5M</div>
+              <div class="stat-title">Cost Savings</div>
+            </div>
+          </div>
+
+          <div class="col-md-3 mb-4">
+            <div class="stat-card text-center">
+              <div class="stat-icon">
+                <i class="fas fa-plane-departure"></i>
+              </div>
+              <div class="stat-number">7.4%</div>
+              <div class="stat-title">Range Increase</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Testimonials Section -->
+    <div class="testimonial-section py-5" id="testimonials">
+      <div class="container">
+        <div class="row text-center mb-5">
+          <div class="col-12">
+            <div class="section-header">
+              <h2>Aviation Experts Trust Us</h2>
+              <p class="text-muted">See what industry leaders are saying about IndigoWing technology</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="testimonial-card">
+              <div class="testimonial-header">
+                <i class="fas fa-quote-left testimonial-quote"></i>
+                <div class="testimonial-image">
+                  <img src="https://media.licdn.com/dms/image/v2/D4D35AQEQ9e1_BateHw/profile-framedphoto-shrink_800_800/profile-framedphoto-shrink_800_800/0/1710169452613?e=1745262000&v=beta&t=00QarUYzoK0ENBoVZT_N2u_EKcXXu9MbXsOp2S1C9xM" alt="Aviation Expert" class="img-fluid">
+                </div>
+                <div>
+                  <div class="testimonial-name">Rajiv Mehta</div>
+                  <div class="testimonial-position">Chief Technical Officer, AviaTech</div>
+                </div>
+              </div>
+              <div class="testimonial-content">
+                "The wing analysis technology from IndigoWing has transformed how we approach fleet optimization. We've
+                seen remarkable efficiency improvements across our entire operations."
+              </div>
+              <div class="testimonial-rating">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="testimonial-card">
+              <div class="testimonial-header">
+                <i class="fas fa-quote-left testimonial-quote"></i>
+                <div class="testimonial-image">
+                  <img src="https://media.licdn.com/dms/image/v2/D4D03AQF1zWr8Afrgug/profile-displayphoto-shrink_800_800/B4DZQbpTAIHYAk-/0/1735630605737?e=1750291200&v=beta&t=2NX4OpGA7R4RH2ZLASHeKdb7l49tDyFo496_yZdEEgg" alt="Fleet Manager" class="img-fluid">
+                </div>
+                <div>
+                  <div class="testimonial-name">Priya Sharma</div>
+                  <div class="testimonial-position">Fleet Manager, SkyLink Airways</div>
+                </div>
+              </div>
+              <div class="testimonial-content">
+                "IndigoWing's technology provides invaluable insights for our maintenance team. The detailed analysis
+                helps us optimize performance and reduce costs significantly."
+              </div>
+              <div class="testimonial-rating">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="testimonial-card">
+              <div class="testimonial-header">
+                <i class="fas fa-quote-left testimonial-quote"></i>
+                <div class="testimonial-image">
+                  <img src="https://media.licdn.com/dms/image/v2/D4E03AQG2TinOscVfzQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1731296392001?e=1750291200&v=beta&t=rkBq0tQvcyF-jH6n_wgSoDNr_C7Bc8mqslvPMrQ3P3M" alt="Aerospace Engineer" class="img-fluid">
+                </div>
+                <div>
+                  <div class="testimonial-name">Dr. Vikram Malhotra</div>
+                  <div class="testimonial-position">Aerospace Engineer, IIT Delhi</div>
+                </div>
+              </div>
+              <div class="testimonial-content">
+                "As an aerospace professional, I'm impressed by the accuracy of IndigoWing's analysis. The AI technology
+                behind it represents the future of aircraft optimization."
+              </div>
+              <div class="testimonial-rating">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Section -->
+  <section class="py-5 my-5" id="contact">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="upload-container text-center">
+            <span class="indigo-badge">Get In Touch</span>
+            <h2>Ready to Optimize Your Fleet?</h2>
+            <p class="subtitle">Contact us for a personalized demonstration of how IndigoWing can transform your
+              airline's performance</p>
+
+            <div class="row justify-content-center mt-5">
+              <div class="col-md-4 text-center mb-4">
+                <div class="feature-icon mx-auto">
+                  <i class="fas fa-envelope"></i>
+                </div>
+                <h5 class="mb-3 feature-title">Email Us</h5>
+                <p class="text-muted">contact@indigowing.com</p>
+              </div>
+
+              <div class="col-md-4 text-center mb-4">
+                <div class="feature-icon mx-auto">
+                  <i class="fas fa-phone-alt"></i>
+                </div>
+                <h5 class="mb-3 feature-title">Call Us</h5>
+                <p class="text-muted">+91 11 4567 8900</p>
+              </div>
+
+              <div class="col-md-4 text-center mb-4">
+                <div class="feature-icon mx-auto">
+                  <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h5 class="mb-3 feature-title">Visit Us</h5>
+                <p class="text-muted">Indigo Tech Center<br>Gurugram, India</p>
+              </div>
+            </div>
+
+            <div class="mt-5">
+              <a href="#" class="btn btn-primary btn-lg">Request Demo</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-5">
+    <div class="container">
+      <div class="row text-center text-md-start">
+        <div class="col-md-4 mb-4">
+          <h5 class="mb-4 fw-bold">IndigoWing</h5>
+          <p class="text-white-50">Advanced aircraft wing analysis technology developed by Saket Maheshwari for Indigo
+            Airlines to optimize fleet performance and reduce operational costs.</p>
+          <div class="mt-3">
+            <a href="#" class="text-white me-3"><i class="fab fa-linkedin"></i></a>
+            <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="text-white me-3"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="text-white"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+
+        <div class="col-md-2 mb-4">
+          <h6 class="mb-4 fw-bold">Quick Links</h6>
+          <ul class="list-unstyled">
+            <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Home</a></li>
+            <li class="mb-2"><a href="#features" class="text-white-50 text-decoration-none">Technology</a></li>
+            <li class="mb-2"><a href="#statistics" class="text-white-50 text-decoration-none">Analytics</a></li>
+            <li class="mb-2"><a href="#testimonials" class="text-white-50 text-decoration-none">Testimonials</a></li>
+            <li><a href="#contact" class="text-white-50 text-decoration-none">Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="col-md-3 mb-4">
+          <h6 class="mb-4 fw-bold">Resources</h6>
+          <ul class="list-unstyled">
+            <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Documentation</a></li>
+            <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">API Reference</a></li>
+            <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Case Studies</a></li>
+            <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Research Papers</a></li>
+            <li><a href="#" class="text-white-50 text-decoration-none">Blog</a></li>
+          </ul>
+        </div>
+
+        <div class="col-md-3">
+          <h6 class="mb-4 fw-bold">Newsletter</h6>
+          <p class="text-white-50">Subscribe to our newsletter for the latest updates.</p>
+          <div class="input-group mb-3">
+            <input type="email" class="form-control" placeholder="Your email" aria-label="Your email">
+            <button class="btn btn-light" type="button">Subscribe</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-top border-secondary mt-5 pt-4 text-center">
+        <p class="mb-0 text-white-50">© 2025 IndigoWing by Saket Maheshwari. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap & JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const uploadForm = document.getElementById('uploadForm');
+      const imageUpload = document.getElementById('imageUpload');
+      const resultContainer = document.getElementById('resultContainer');
+      const resultImage = document.getElementById('resultImage');
+      const wingData = document.getElementById('wingData');
+      const loader = document.getElementById('loader');
+      const dropZone = document.getElementById('dropZone');
+      const browseBtn = document.getElementById('browseBtn');
+      const backToTop = document.getElementById('backToTop');
+      const navbar = document.getElementById('mainNav');
+
+      // Navbar scroll effect
+      window.addEventListener('scroll', function () {
+        if (window.scrollY > 50) {
+          navbar.classList.add('navbar-scrolled');
+          backToTop.classList.add('show');
+        } else {
+          navbar.classList.remove('navbar-scrolled');
+          backToTop.classList.remove('show');
+        }
+      });
+
+      // Back to top button
+      backToTop.addEventListener('click', function () {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+
+      // Handle browse button click
+      browseBtn.addEventListener('click', function () {
+        imageUpload.click();
+      });
+
+      // Display file name when selected
+      imageUpload.addEventListener('change', function () {
+        if (this.files[0]) {
+          dropZone.querySelector('h4').textContent = this.files[0].name;
+          dropZone.querySelector('.upload-icon i').className = 'fas fa-file-image';
+        }
+      });
+
+      // Handle drag and drop
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+      });
+
+      function highlight() {
+        dropZone.classList.add('bg-light');
+      }
+
+      function unhighlight() {
+        dropZone.classList.remove('bg-light');
+      }
+
+      dropZone.addEventListener('drop', handleDrop, false);
+
+      function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        imageUpload.files = files;
+
+        if (files[0]) {
+          dropZone.querySelector('h4').textContent = files[0].name;
+          dropZone.querySelector('.upload-icon i').className = 'fas fa-file-image';
+        }
+      }
+
+      // Smooth scrolling for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+
+          const targetId = this.getAttribute('href');
+          if (targetId === '#') return;
+
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        });
+      });
+
+      // Handle form submission
+      uploadForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        // Check if an image was selected
+        if (!imageUpload.files[0]) {
+          alert('Please select an image to analyze.');
+          return;
+        }
+
+        // Show loader
+        loader.style.display = 'block';
+        resultContainer.style.display = 'none';
+
+        // Create form data
+        const formData = new FormData();
+        formData.append('image', imageUpload.files[0]);
+
+        try {
+          // Make the actual API call
+          const response = await fetch('/analyze', {
+            method: 'POST',
+            body: formData
+          });
+
+          const data = await response.json();
+
+          if (data.error) {
+            throw new Error(data.error);
+          }
+
+          // Display results
+          displayResults(data);
+
+        } catch (error) {
+          console.error('Error:', error);
+          alert('An error occurred during analysis. Please try again.');
+        } finally {
+          // Hide loader
+          loader.style.display = 'none';
+        }
+      });
+
+      // Display results
+      function displayResults(data) {
+        // Show result container with animation
+        resultContainer.style.display = 'block';
+        resultContainer.style.opacity = 0;
+
+        setTimeout(() => {
+          resultContainer.style.opacity = 1;
+          resultContainer.style.transition = 'opacity 0.5s ease';
+        }, 50);
+
+        // Set the image source from API response
+        resultImage.src = data.annotated_image;
+
+        // Display wing data
+        const wingDataObj = data.wing_data;
+        wingData.innerHTML = `
+      <ul class="list-group">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>Wing Type:</span>
+          <strong class="badge bg-primary rounded-pill px-3 py-2">${wingDataObj.wing_type}</strong>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>Aspect Ratio:</span>
+          <strong>${wingDataObj.aspect_ratio}</strong>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>Est. Wingspan:</span>
+          <strong>${wingDataObj.estimated_wingspan}</strong>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>Wing Area:</span>
+          <strong>${wingDataObj.wing_area}</strong>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>Efficiency Rating:</span>
+          <strong class="text-success">${wingDataObj.efficiency_rating}</strong>
+        </li>
+      </ul>
+      <div class="alert alert-info mt-3">
+        <p class="mb-0"><small>These measurements are estimates based on image analysis. For precise engineering data, consult manufacturer specifications.</small></p>
+      </div>
+    `;
+
+        // Scroll to results
+        resultContainer.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+
+      // Animation on scroll
+      const animatedElements = document.querySelectorAll('.animated');
+
+      function checkScroll() {
+        animatedElements.forEach(element => {
+          const elementTop = element.getBoundingClientRect().top;
+          const windowHeight = window.innerHeight;
+
+          if (elementTop < windowHeight - 100) {
+            element.classList.add('fadeInUp');
+          }
+        });
+      }
+
+      // Initial check
+      checkScroll();
+
+      // Check on scroll
+      window.addEventListener('scroll', checkScroll);
+    });
+  </script>
+</body>
+
+</html>
